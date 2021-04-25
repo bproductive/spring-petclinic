@@ -15,7 +15,7 @@ pipeline{
         }
 
      stage ('Parallel block') {
-        Parallel {
+        parallel {
         stage ('Code Validated') {    // This is Parallel Code
                 steps{
                    catchError (buildResult: 'SUCCESS', stageResult: 'FAILURE') {
