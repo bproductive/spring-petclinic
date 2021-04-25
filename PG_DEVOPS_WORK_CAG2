@@ -1,0 +1,67 @@
+pipeline{
+         agent {              // where we want to run this pipeline
+             label 'master'
+         }
+         tools {
+             maven 'Mavenathome'
+             jdk 'Java8athome'
+         }
+    stages{
+
+        stage ('Checkout the code') {
+                steps{
+                    git branch: 'main', url:  'https://github.com/bproductive/spring-petclinic.git'
+                }
+        }
+
+    stage ('Parallel block') {
+        parallel {
+        stage ('Code Validated') {    // This is Parallel Code
+                steps{
+                   catchError (buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                   sh """                   
+                   echo "Validate code"
+                   mvn validate
+                   """
+                    }
+                }
+        }
+
+        stage ('Code Compile') {    // This is Parallel Code
+                steps{
+                   catchError (buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                   sh """                   
+                   echo "compile code"
+                   mvn compile
+                   """
+                    }
+                }
+        }
+      }
+    }
+
+        stage ('JUNIT Test') {    // This is a JUNIT Test
+                steps{
+                   sh """                   
+                   echo "JUNIT TEST"
+                   mvn test
+                   """
+                }
+        }
+
+        stage ('Packaging') {          // converting it into deployable code. Will create a WAR file from the souce code./
+                steps{
+                   sh """          
+                   echo "package code"
+                   mvn package
+                   """
+                }                
+        }
+            
+    }
+    post {
+        always{
+            junit 'target/surefire-reports/**/*.xml'
+        }
+    }
+}
