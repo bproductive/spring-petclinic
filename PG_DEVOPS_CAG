@@ -14,7 +14,7 @@ pipeline{
                 }
         }
 
-    Stage ('Parallel block') {
+     stage ('Parallel block') {
         Parallel {
         stage ('Code Validated') {    // This is Parallel Code
                 steps{
