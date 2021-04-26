@@ -41,6 +41,7 @@ pipeline{
     }
 
         stage ('JUNIT Test') {    // This is a JUNIT Test
+        when { expression {return env.TEST.contains('YES') }}   // We are declaring an Environment Variable called: TEST
                 steps{
                    sh """                   
                    echo "JUNIT TEST"
